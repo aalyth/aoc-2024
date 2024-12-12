@@ -191,6 +191,6 @@ int main()
         if (NULL == input) {
                 err(1, "could not get input");
         }
-        printf("%d\n", get_trail_scores_sum((const char **)input));
+        // printf("%d\n", get_trail_scores_sum((const char **)input));
         return 0;
 }
