@@ -28,7 +28,7 @@ struct coords coords_new(int x, int y)
 
 bool coords_valid(const struct coords c, size_t width, size_t height)
 {
-        return c.x > 0 && c.x < width && c.y > 0 && c.y < height;
+        return c.x >= 0 && c.x < width && c.y >= 0 && c.y < height;
 }
 
 bool coords_eq(const struct coords left, const struct coords right)
@@ -159,18 +159,20 @@ int get_trail_scores_sum(const char **input)
         unsigned int trails_count = 0;
         for (; iter != NULL; iter = queue_pop(&bfs_queue)) {
                 if (coords_idx(input, iter->current) == '9') {
+                        /*
                         if (!dll_contains(&traversed_trails, iter, trail_eq)) {
-                                trails_count += 1;
                                 dll_push_back(&traversed_trails, iter);
+                                trails_count += 1;
                         }
+                        */
+                        trails_count += 1;
                         continue;
                 }
                 for (int i = 0; i < 4; ++i) {
                         struct coords current = coords_added(iter->current, directions[i]);
-                        if (!coords_valid(current, width, height) &&
+                        if (coords_valid(current, width, height) &&
                             coords_idx(input, current) == coords_idx(input, iter->current) + 1)
-                                continue;
-                        queue_push(&bfs_queue, trail_alloc(iter->start, current));
+                                queue_push(&bfs_queue, trail_alloc(iter->start, current));
                 }
                 free(iter);
         }
