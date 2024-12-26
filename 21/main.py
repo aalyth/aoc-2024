@@ -109,8 +109,8 @@ def get_shortest_path(moves: str, depth: int) -> str:
     return min(map(lambda path: get_shortest_path(path, depth - 1), paths), key=len)
 
 
-def get_spf_between(start: str, end: str) -> str:
-    return min(get_paths_from(end, DIRECTIONAL_KEYS[start], DIRECTIONAL_KEYS), key=len)
+def get_spfs_between(start: str, end: str) -> [str]:
+    return get_paths_from(end, DIRECTIONAL_KEYS[start], DIRECTIONAL_KEYS)
 
 
 lookup: dict[(str, str, int), int] = dict()
@@ -121,18 +121,21 @@ def get_spf_len_between_depth(start: str, end: str, depth: int) -> int:
         return lookup[(start, end, depth)]
 
     if depth == 1:
-        res = len(get_spf_between(start, end))
+        res = len(min(get_spfs_between(start, end)))
         lookup[(start, end, depth)] = res
         return res
 
-    spf_len = 0
-    moves = get_spf_between(start, end)
-    prev_key = "A"
-    for key in moves:
-        spf_len += get_spf_len_between_depth(prev_key, key, depth - 1)
-        prev_key = key
-    lookup[(start, end, depth)] = spf_len
-    return spf_len
+    spf_lens = []
+    moves = get_spfs_between(start, end)
+    for move in moves:
+        spf_len = 0
+        prev_key = "A"
+        for key in move:
+            spf_len += get_spf_len_between_depth(prev_key, key, depth - 1)
+            prev_key = key
+        spf_lens.append(spf_len)
+    lookup[(start, end, depth)] = min(spf_lens)
+    return min(spf_lens)
 
 
 # not an exact solution
